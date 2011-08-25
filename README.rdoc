@@ -1,0 +1,14 @@
+= Sitemap
+
+A simple ruby on rails sitemap generator
+
+
+== Usage
+
+TODO
+
+
+== License
+
+This package is licensed under the MIT license and/or the Creative
+Commons Attribution-ShareAlike.
