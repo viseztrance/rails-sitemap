@@ -9,19 +9,20 @@ gem "builder", "~> 2.1.2"
 
 require "singleton"
 require "builder"
+require "sitemap/railtie"
 
 module Sitemap
 
   class Generator
 
     include Singleton
-    include Rails.application.routes.url_helpers
 
     VERSION = Gem::Specification.load(File.expand_path("../sitemap.gemspec", File.dirname(__FILE__))).version.to_s
 
     attr_accessor :entries, :host
 
     def initialize
+      self.class.send(:include, Rails.application.routes.url_helpers)
       self.entries = []
     end
 

@@ -1,6 +1,5 @@
 require 'rake/rdoctask'
 
-
 spec = Gem::Specification.load(File.expand_path("sitemap.gemspec", File.dirname(__FILE__)))
 
 # Create the documentation.
