@@ -5,8 +5,6 @@
 # Copyright:: Copyright (c) 2011 Daniel Mircea, The Geeks
 # License:: MIT and/or Creative Commons Attribution-ShareAlike
 
-gem "builder", "~> 2.1.2"
-
 require "singleton"
 require "builder"
 require "sitemap/railtie"
