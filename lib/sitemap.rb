@@ -42,7 +42,7 @@ module Sitemap
     def collection(type, options = {})
       objects = options[:objects] ? options[:objects].call : type.to_s.classify.constantize.all
       objects.each do |object|
-        path(object, options.reject { |k, v| k == :objects })
+        path(object)
       end
     end
 
