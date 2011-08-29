@@ -1,18 +1,4 @@
-#
-# = sitemap.rb - Sitemap
-#
-# Author:: Daniel Mircea daniel@viseztrance.com
-# Copyright:: Copyright (c) 2011 Daniel Mircea, The Geeks
-# License:: MIT and/or Creative Commons Attribution-ShareAlike
-
-require "singleton"
-require "builder"
-require "sitemap/railtie"
-require "sitemap/ping"
-
 module Sitemap
-
-  VERSION = Gem::Specification.load(File.expand_path("../sitemap.gemspec", File.dirname(__FILE__))).version.to_s
 
   class Generator
 
