@@ -11,11 +11,12 @@ require "sitemap/railtie"
 
 module Sitemap
 
+  VERSION = Gem::Specification.load(File.expand_path("../sitemap.gemspec", File.dirname(__FILE__))).version.to_s
+
   class Generator
 
     include Singleton
 
-    VERSION = Gem::Specification.load(File.expand_path("../sitemap.gemspec", File.dirname(__FILE__))).version.to_s
     SEARCH_ATTRIBUTES = {
       :change_frequency => "changefreq",
       :priority         => "priority"
