@@ -10,7 +10,7 @@ spec = Gem::Specification.new do |spec|
   spec.email = "daniel@viseztrance.com"
   spec.homepage = "http://github.com/viseztrance/rails-sitemap"
 
-  spec.files = Dir["{lib,docs}/**/*"] + ["README.rdoc", "LICENSE", "Rakefile", "init.rb", "sitemap.gemspec"]
+  spec.files = Dir["{lib,docs}/**/*"] + ["README.rdoc", "LICENSE", "Rakefile", "sitemap.gemspec"]
   spec.require_paths = ["lib"]
 
   spec.has_rdoc = true
