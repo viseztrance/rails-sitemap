@@ -1,6 +1,18 @@
-require 'rake/rdoctask'
+require "rake"
+require "rdoc/task"
+require "rake/testtask"
 
 spec = Gem::Specification.load(File.expand_path("sitemap.gemspec", File.dirname(__FILE__)))
+
+desc "Default: run sitemap unit tests."
+task :default => :test
+
+desc "Test the sitemap plugin."
+Rake::TestTask.new(:test) do |t|
+  t.libs << "lib"
+  t.pattern = "test/**/*_test.rb"
+  t.verbose = true
+end
 
 # Create the documentation.
 Rake::RDocTask.new do |rdoc|
