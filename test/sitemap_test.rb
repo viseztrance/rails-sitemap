@@ -58,6 +58,19 @@ class SitemapTest < Test::Unit::TestCase
     end
   end
 
+  def test_custom_collection_objects
+    activities = [Activity.first, Activity.last]
+    Sitemap::Generator.instance.render(:host => "someplace.com") do
+      collection :activities, :objects => proc { activities }
+    end
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
+    elements = doc.xpath "//url/loc"
+    assert_equal elements.length, activities.length
+    activities.each_with_index do |activity, i|
+      assert_equal elements[i].text, "http://someplace.com/activities/%d" % activity.id
+    end
+  end
+
   def test_search_attributes
     Sitemap::Generator.instance.render(:host => "someplace.com") do
       path :faq, :priority => 1, :change_frequency => "always"
