@@ -59,4 +59,18 @@ class SitemapTest < Test::Unit::TestCase
     end
   end
 
+  def test_search_attributes
+    Sitemap::Generator.instance.render(:host => "someplace.com") do
+      path :faq, :priority => 1, :change_frequency => "always"
+      collection :activities, :change_frequency => "weekly"
+    end
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
+    assert_equal doc.xpath("//url/priority").first.text, "1"
+    frequency_elements = doc.xpath "//url/changefreq"
+    assert_equal frequency_elements[0].text, "always"
+    frequency_elements[1..-1].each do |element|
+      assert_equal element.text, "weekly"
+    end
+  end
+
 end
