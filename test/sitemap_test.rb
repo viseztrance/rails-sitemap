@@ -10,8 +10,7 @@ require File.expand_path("../lib/sitemap", File.dirname(__FILE__))
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 
-class Activity < ActiveRecord::Base
-end
+class Activity < ActiveRecord::Base; end
 
 class SitemapTest < Test::Unit::TestCase
 
