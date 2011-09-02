@@ -7,7 +7,7 @@ namespace :sitemap do
   desc "Generates a new sitemap."
   task :generate => :environment do
     setup
-    path = File.join(Rails.root, "public", "sitemap.xml")
+    path = File.join(Rails.public_path, "sitemap.xml")
     Sitemap::Generator.instance.save path
   end
 
