@@ -47,22 +47,23 @@ class SitemapTest < Test::Unit::TestCase
     end
   end
 
-  def test_collections_route
+  def test_resources_route
     Sitemap::Generator.instance.render(:host => "someplace.com") do
-      collection :activities
+      resources :activities
     end
     doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
     elements = doc.xpath "//url/loc"
-    assert_equal elements.length, Activity.count
-    elements.each_with_index do |element, i|
+    assert_equal elements.length, Activity.count + 1
+    assert_equal elements.first.text, "http://someplace.com/activities"
+    elements[1..-1].each_with_index do |element, i|
       assert_equal element.text, "http://someplace.com/activities/#{i + 1}"
     end
   end
 
-  def test_custom_collection_objects
+  def test_custom_resource_objects
     activities = [Activity.first, Activity.last]
     Sitemap::Generator.instance.render(:host => "someplace.com") do
-      collection :activities, :objects => proc { activities }
+      resources :activities, :objects => proc { activities }, :skip_index => true
     end
     doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
     elements = doc.xpath "//url/loc"
@@ -75,7 +76,7 @@ class SitemapTest < Test::Unit::TestCase
   def test_params
     Sitemap::Generator.instance.render(:host => "someplace.com") do
       path :faq, :params => { :host => "anotherplace.com", :format => "html", :filter => "recent" }
-      collection :activities, :params => { :host => proc { |obj| [obj.location, host].join(".") } }
+      resources :activities, :skip_index => true, :params => { :host => proc { |obj| [obj.location, host].join(".") } }
     end
     activities = Activity.all
     doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
@@ -89,7 +90,7 @@ class SitemapTest < Test::Unit::TestCase
   def test_search_attributes
     Sitemap::Generator.instance.render(:host => "someplace.com") do
       path :faq, :priority => 1, :change_frequency => "always"
-      collection :activities, :change_frequency => "weekly"
+      resources :activities, :change_frequency => "weekly"
     end
     doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
     assert_equal doc.xpath("//url/priority").first.text, "1"

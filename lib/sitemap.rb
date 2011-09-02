@@ -52,7 +52,8 @@ module Sitemap
       }
     end
 
-    def collection(type, options = {})
+    def resources(type, options = {})
+      path(type) unless options[:skip_index]
       objects = options[:objects] ? options[:objects].call : type.to_s.classify.constantize.all
       options.reject! { |k, v| k == :objects }
 
