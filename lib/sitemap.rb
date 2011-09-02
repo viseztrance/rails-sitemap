@@ -72,6 +72,10 @@ module Sitemap
       file.close
     end
 
+    def file_url
+      URI::HTTP.build(:host => host, :path => "/sitemap.xml").to_s
+    end
+
   end
 
 end

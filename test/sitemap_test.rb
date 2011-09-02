@@ -85,4 +85,9 @@ class SitemapTest < Test::Unit::TestCase
     end
   end
 
+  def test_file_url
+    Sitemap::Generator.instance.render(:host => "someplace.com") {}
+    assert_equal Sitemap::Generator.instance.file_url, "http://someplace.com/sitemap.xml"
+  end
+
 end

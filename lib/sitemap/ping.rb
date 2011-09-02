@@ -12,9 +12,9 @@ module Sitemap
       "Bing"    => "http://www.bing.com/webmaster/ping.aspx?siteMap=%s"
     }
 
-    def self.send_request(file_path)
+    def self.send_request(file_path = false)
       SEARCH_ENGINES.each do |name, url|
-        request = url % CGI.escape(file_path)
+        request = url % CGI.escape(file_path || Sitemap::Generator.instance.file_url)
         Net::HTTP.get(URI.parse(request))
       end
     end
