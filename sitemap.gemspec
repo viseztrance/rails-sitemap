@@ -10,6 +10,8 @@ spec = Gem::Specification.new do |spec|
   spec.email = "daniel@viseztrance.com"
   spec.homepage = "http://github.com/viseztrance/rails-sitemap"
 
+  spec.add_development_dependency "nokogiri"
+
   spec.files = Dir["{lib,docs}/**/*"] + ["README.rdoc", "LICENSE", "Rakefile", "sitemap.gemspec"]
   spec.require_paths = ["lib"]
 
