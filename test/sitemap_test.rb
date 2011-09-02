@@ -5,6 +5,7 @@ require "action_controller/railtie" # Rails 3.1
 require "active_record"
 require "nokogiri"
 
+require File.expand_path("singleton", File.dirname(__FILE__))
 require File.expand_path("setup", File.dirname(__FILE__))
 require File.expand_path("../lib/sitemap", File.dirname(__FILE__))
 
@@ -18,7 +19,7 @@ class SitemapTest < Test::Unit::TestCase
 
   def setup
     create_db
-    Sitemap::Generator.instance.entries = []
+    Sitemap::Generator.reset_instance
   end
 
   def teardown
