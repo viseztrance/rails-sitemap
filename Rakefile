@@ -1,5 +1,4 @@
-require "rake"
-require "rdoc/task"
+require "rake/rdoctask"
 require "rake/testtask"
 
 spec = Gem::Specification.load(File.expand_path("sitemap.gemspec", File.dirname(__FILE__)))
