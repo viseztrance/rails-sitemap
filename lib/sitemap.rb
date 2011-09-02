@@ -39,8 +39,10 @@ module Sitemap
 
     def path(object, options = {})
       params = options[:params] ? options[:params].clone : {}
-      params[:host] = params[:host].respond_to?(:call) ? params[:host].call(object) : host
-
+      params[:host] ||= host # Use global host if none was specified.
+      params.merge!(params) do |type, value|
+        value.respond_to?(:call) ? value.call(object) : value
+      end
       search = options.select { |k, v| SEARCH_ATTRIBUTES.keys.include?(k) }
 
       self.entries << {

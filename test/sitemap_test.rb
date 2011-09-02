@@ -71,6 +71,20 @@ class SitemapTest < Test::Unit::TestCase
     end
   end
 
+  def test_params
+    Sitemap::Generator.instance.render(:host => "someplace.com") do
+      path :faq, :params => { :host => "anotherplace.com", :format => "html", :filter => "recent" }
+      collection :activities, :params => { :host => proc { |obj| [obj.location, host].join(".") } }
+    end
+    activities = Activity.all
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
+    elements = doc.xpath "//url/loc"
+    assert_equal elements.first.text, "http://anotherplace.com/questions.html?filter=recent"
+    elements[1..-1].each_with_index do |element, i|
+      assert_equal element.text, "http://%s.someplace.com/activities/%d" % [activities[i].location, activities[i].id]
+    end
+  end
+
   def test_search_attributes
     Sitemap::Generator.instance.render(:host => "someplace.com") do
       path :faq, :priority => 1, :change_frequency => "always"
@@ -78,9 +92,9 @@ class SitemapTest < Test::Unit::TestCase
     end
     doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
     assert_equal doc.xpath("//url/priority").first.text, "1"
-    frequency_elements = doc.xpath "//url/changefreq"
-    assert_equal frequency_elements[0].text, "always"
-    frequency_elements[1..-1].each do |element|
+    elements = doc.xpath "//url/changefreq"
+    assert_equal elements[0].text, "always"
+    elements[1..-1].each do |element|
       assert_equal element.text, "weekly"
     end
   end
