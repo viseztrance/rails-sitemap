@@ -13,6 +13,7 @@ spec = Gem::Specification.new do |spec|
   spec.add_development_dependency "nokogiri"
 
   spec.files = Dir["{lib,docs}/**/*"] + ["README.rdoc", "LICENSE", "Rakefile", "sitemap.gemspec"]
+  spec.test_files = Dir["test/**/*"]
   spec.require_paths = ["lib"]
 
   spec.has_rdoc = true
