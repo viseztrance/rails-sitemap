@@ -23,7 +23,7 @@ module Sitemap
       :priority         => "priority"
     }
 
-    attr_accessor :entries, :host
+    attr_accessor :entries, :host, :routes
 
     def initialize
       self.class.send(:include, Rails.application.routes.url_helpers)
@@ -34,7 +34,7 @@ module Sitemap
       options.each do |k, v|
         self.send("#{k}=", v)
       end
-      instance_exec(self, &block)
+      self.routes = block
     end
 
     def path(object, options = {})
@@ -60,6 +60,7 @@ module Sitemap
     end
 
     def build
+      instance_exec(self, &routes)
       xml = Builder::XmlMarkup.new(:indent => 2)
       file = File.read(File.expand_path("../views/index.xml.builder", __FILE__))
       instance_eval file
