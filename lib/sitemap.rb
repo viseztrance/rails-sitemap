@@ -14,6 +14,15 @@ module Sitemap
 
   VERSION = Gem::Specification.load(File.expand_path("../sitemap.gemspec", File.dirname(__FILE__))).version.to_s
 
+  mattr_accessor :defaults
+
+  self.defaults = {
+    :params => {},
+    :search => {
+      :updated_at => proc { |obj| obj.updated_at.strftime("%Y-%m-%d") if obj.respond_to?(:updated_at) }
+    }
+  }
+
   class Generator
 
     include Singleton
@@ -82,16 +91,11 @@ module Sitemap
     # The resolved url would be <tt>http://mywebsite.com/frequent-questions?filter=recent</tt>.
     #
     def path(object, options = {})
-      params = options[:params] ? options[:params].clone : {}
+      params = Sitemap.defaults[:params].clone.merge!(options[:params] || {})
       params[:host] ||= host # Use global host if none was specified.
       params.merge!(params) { |type, value| get_data(object, value) }
 
-      search = {
-        :updated_at => proc { |obj|
-          obj.updated_at.strftime("%Y-%m-%d") if obj.respond_to?(:updated_at)
-        }
-      }
-      search.merge! options.select { |k, v| SEARCH_ATTRIBUTES.keys.include?(k) }
+      search = Sitemap.defaults[:search].clone.merge! options.select { |k, v| SEARCH_ATTRIBUTES.keys.include?(k) }
 
       self.entries << {
         :object => object,
