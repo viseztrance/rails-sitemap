@@ -6,7 +6,7 @@ A simple ruby on rails sitemap generator.
 
 Create a sitemap.rb file in your config directory. Paths can be indexed as follows:
 
-  Sitemap::Generator.instance.render :host => "mywebsite.com" do
+  Sitemap::Generator.instance.load :host => "mywebsite.com" do
     path :root, :priority => 1
     path :faq, :priority => 0.5, :change_frequency => "weekly"
     resources :activities, :params => { :format => "html" }
