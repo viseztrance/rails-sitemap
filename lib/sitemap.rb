@@ -46,25 +46,25 @@ module Sitemap
     #
     # The +host+, or any other global option can be set here:
     #
-    #   Sitemap.instance.render :host => "mywebsite.com" do
+    #   Sitemap::Generator.instance.render :host => "mywebsite.com" do
     #     ...
     #   end
     #
     # Simple paths can be added as follows:
     #
-    #   Sitemap.instance.render :host => "mywebsite.com" do
+    #   Sitemap::Generator.instance.render :host => "mywebsite.com" do
     #     path :faq
     #   end
     #
     # Object collections are supported too:
     #
-    #   Sitemap.instance.render :host => "mywebsite.com" do
+    #   Sitemap::Generator.instance.render :host => "mywebsite.com" do
     #     resources :activities
     #   end
     #
     # Search options such as frequency and priority can be declared as an options hash:
     #
-    #   Sitemap.instance.render :host => "mywebsite.com" do
+    #   Sitemap::Generator.instance.render :host => "mywebsite.com" do
     #     path :root, :priority => 1
     #     path :faq, :priority => 0.8, :change_frequency => "daily"
     #     resources :activities, :change_frequency => "weekly"
