@@ -160,7 +160,7 @@ module Sitemap
     private
 
     def get_data(object, data)
-      data.respond_to?(:call) ? data.call(object) : data
+      data.is_a?(Proc) ? data.call(object) : data
     end
 
   end
