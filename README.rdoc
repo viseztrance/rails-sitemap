@@ -15,6 +15,14 @@ Create a sitemap.rb file in your config directory. Paths can be indexed as follo
 
 Please read the docs for a more comprehensive list of options.
 
+Building the sitemap:
+
+  rake sitemap:generate
+
+Ping search engines:
+
+  rake sitemap:ping
+
 == License
 
 This package is licensed under the MIT license and/or the Creative
