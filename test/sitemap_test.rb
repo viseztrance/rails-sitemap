@@ -73,21 +73,28 @@ class SitemapTest < Test::Unit::TestCase
     end
   end
 
-  def test_params
+  def test_params_options
     Sitemap::Generator.instance.render(:host => "someplace.com") do
       path :faq, :params => { :host => "anotherplace.com", :format => "html", :filter => "recent" }
+    end
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
+    elements = doc.xpath "//url/loc"
+    assert_equal elements.first.text, "http://anotherplace.com/questions.html?filter=recent"
+  end
+
+  def test_params_blocks
+    Sitemap::Generator.instance.render(:host => "someplace.com") do
       resources :activities, :skip_index => true, :params => { :host => proc { |obj| [obj.location, host].join(".") } }
     end
     activities = Activity.all
     doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
     elements = doc.xpath "//url/loc"
-    assert_equal elements.first.text, "http://anotherplace.com/questions.html?filter=recent"
-    elements[1..-1].each_with_index do |element, i|
+    elements.each_with_index do |element, i|
       assert_equal element.text, "http://%s.someplace.com/activities/%d" % [activities[i].location, activities[i].id]
     end
   end
 
-  def test_search_attributes
+  def test_search_attribute_options
     Sitemap::Generator.instance.render(:host => "someplace.com") do
       path :faq, :priority => 1, :change_frequency => "always"
       resources :activities, :change_frequency => "weekly"
@@ -98,6 +105,19 @@ class SitemapTest < Test::Unit::TestCase
     assert_equal elements[0].text, "always"
     elements[1..-1].each do |element|
       assert_equal element.text, "weekly"
+    end
+  end
+
+  def test_search_attribute_blocks
+    Sitemap::Generator.instance.render(:host => "someplace.com") do
+      resources :activities, :priority => proc { |obj| obj.id <= 2 ? 1 : 0.5 }, :skip_index => true
+    end
+    activities = Activity.all
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
+    elements = doc.xpath "//url/priority"
+    elements.each_with_index do |element, i|
+      value = activities[i].id <= 2 ? "1" : "0.5"
+      assert_equal element.text, value
     end
   end
 

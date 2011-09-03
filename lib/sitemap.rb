@@ -2,7 +2,7 @@
 # = sitemap.rb - Sitemap
 #
 # Author:: Daniel Mircea daniel@viseztrance.com
-# Copyright:: Copyright (c) 2011 Daniel Mircea, The Geeks
+# Copyright:: 2011 (c) Daniel Mircea, {The Geeks}[http://thegeeks.ro]
 # License:: MIT and/or Creative Commons Attribution-ShareAlike
 
 require "singleton"
@@ -19,6 +19,7 @@ module Sitemap
     include Singleton
 
     SEARCH_ATTRIBUTES = {
+      :updated_at       => "lastmod",
       :change_frequency => "changefreq",
       :priority         => "priority"
     }
@@ -67,7 +68,7 @@ module Sitemap
       self.routes = block
     end
 
-    # Ads the specified url or object (such as an ActiveRecord model instance).
+    # Adds the specified url or object (such as an ActiveRecord model instance).
     # In either case the data is being looked up in the current application routes.
     #
     # Params can be specified as follows:
@@ -83,10 +84,14 @@ module Sitemap
     def path(object, options = {})
       params = options[:params] ? options[:params].clone : {}
       params[:host] ||= host # Use global host if none was specified.
-      params.merge!(params) do |type, value|
-        value.respond_to?(:call) ? value.call(object) : value
-      end
-      search = options.select { |k, v| SEARCH_ATTRIBUTES.keys.include?(k) }
+      params.merge!(params) { |type, value| get_data(object, value) }
+
+      search = {
+        :updated_at => proc { |obj|
+          obj.updated_at.strftime("%Y-%m-%d") if obj.respond_to?(:updated_at)
+        }
+      }
+      search.merge! options.select { |k, v| SEARCH_ATTRIBUTES.keys.include?(k) }
 
       self.entries << {
         :object => object,
@@ -112,7 +117,7 @@ module Sitemap
     # As with the path, you can specify params through the +params+ options hash.
     # The params can also be build conditionally by using a +proc+:
     #
-    #   resources :activities, :params => { :host => proc { |obj| [obj.location, host].join(".") } }, :skip_index => true
+    #   resources :activities, :params => { :host => proc { |activity| [activity.location, host].join(".") } }, :skip_index => true
     #
     # In this case the host will change based the each of the objects associated +location+ attribute.
     # Because the index page doesn't have this attribute it's best to skip it.
@@ -142,9 +147,15 @@ module Sitemap
       file.close
     end
 
-    # URL to <tt>sitemap.xml</tt> file.
+    # URL to the <tt>sitemap.xml</tt> file.
     def file_url
       URI::HTTP.build(:host => host, :path => "/sitemap.xml").to_s
+    end
+
+    private
+
+    def get_data(object, data)
+      data.respond_to?(:call) ? data.call(object) : data
     end
 
   end
