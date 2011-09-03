@@ -121,6 +121,16 @@ class SitemapTest < Test::Unit::TestCase
     end
   end
 
+  def test_discards_empty_search_attributes # Empty or false (boolean).
+    Sitemap::Generator.instance.render(:host => "someplace.com") do
+      path :faq, :priority => "", :change_frequency => lambda { |e| return false}, :updated_at => Date.today
+    end
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
+    assert_equal doc.xpath("//url/priority").count, 0
+    assert_equal doc.xpath("//url/changefreq").count, 0
+    assert_equal doc.xpath("//url/lastmod").text, Date.today.to_s
+  end
+
   def test_file_url
     Sitemap::Generator.instance.render(:host => "someplace.com") {}
     assert_equal Sitemap::Generator.instance.file_url, "http://someplace.com/sitemap.xml"

@@ -95,7 +95,8 @@ module Sitemap
       params[:host] ||= host # Use global host if none was specified.
       params.merge!(params) { |type, value| get_data(object, value) }
 
-      search = Sitemap.defaults[:search].clone.merge! options.select { |k, v| SEARCH_ATTRIBUTES.keys.include?(k) }
+      search = Sitemap.defaults[:search].clone.merge!(options.select { |k, v| SEARCH_ATTRIBUTES.keys.include?(k) })
+      search.merge!(search) { |type, value| get_data(object, value) }
 
       self.entries << {
         :object => object,
