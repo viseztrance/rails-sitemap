@@ -76,9 +76,7 @@ module Sitemap
     #   match "/frequent-questions" => "static#faq", :as => "faq"
     #
     #   # config/sitemap.rb
-    #   Sitemap.instance.render :host => "mywebsite.com" do
-    #     path :faq, :params => { :filter => "recent" }
-    #   end
+    #   path :faq, :params => { :filter => "recent" }
     #
     # The resolved url would be <tt>http://mywebsite.com/frequent-questions?filter=recent</tt>.
     #
@@ -101,28 +99,20 @@ module Sitemap
     #
     # The following will map all Activity entries, as well as the index (<tt>/activities</tt>) page:
     #
-    #   Sitemap.instance.render :host => "mywebsite.com" do
-    #     resources :activities
-    #   end
+    #   resources :activities
     #
     # You can also specify which entries are being mapped:
     #
-    #   Sitemap.instance.render :host => "mywebsite.com" do
-    #     resources :articles, :objects => proc { Article.published }
-    #   end
+    #   resources :articles, :objects => proc { Article.published }
     #
     # To skip the index action and map only the records:
     #
-    #   Sitemap.instance.render :host => "mywebsite.com" do
-    #     resources :articles, :skip_index => true
-    #   end
+    #   resources :articles, :skip_index => true
     #
     # As with the path, you can specify params through the +params+ options hash.
     # The params can also be build conditionally by using a +proc+:
     #
-    #   Sitemap.instance.render :host => "mywebsite.com" do
-    #     resources :activities, :params => { :host => proc { |obj| [obj.location, host].join(".") } }, :skip_index => true
-    #   end
+    #   resources :activities, :params => { :host => proc { |obj| [obj.location, host].join(".") } }, :skip_index => true
     #
     # In this case the host will change based the each of the objects associated +location+ attribute.
     # Because the index page doesn't have this attribute it's best to skip it.
