@@ -2,9 +2,23 @@
 
 A simple ruby on rails sitemap generator.
 
+== Instalation
+
+Install the gem:
+
+  gem install sitemap
+
+Or as a plugin:
+
+  rails plugin install git://github.com/viseztrance/rails-sitemap.git
+
+Then create the initial config file:
+
+  rails g sitemap:install
+
 == Usage
 
-Create a sitemap.rb file in your config directory. Paths can be indexed as follows:
+In your sitemap config file, paths can be indexed as follows:
 
   Sitemap::Generator.instance.load :host => "mywebsite.com" do
     path :root, :priority => 1
@@ -22,6 +36,16 @@ Building the sitemap:
 Ping search engines:
 
   rake sitemap:ping
+
+== Setting defaults
+
+You may change the defaults for either <tt>params</tt> or <tt>search</tt> options as follows:
+
+  Sitemap.defaults[:params] = { :format => "html" }
+
+== Limitations
+
+Sitemaps can only have up to 50000 urls and an uncompressed size of 10MB. This issue will be resolved in a future release.
 
 == License
 
