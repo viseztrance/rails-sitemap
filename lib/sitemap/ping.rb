@@ -7,7 +7,6 @@ module Sitemap
 
     SEARCH_ENGINES = {
       "Google"  => "http://www.google.com/webmasters/tools/ping?sitemap=%s",
-      "Yahoo!"  => "http://search.yahooapis.com/SiteExplorerService/V1/updateNotification?appid=SitemapWriter&url=%s",
       "Ask.com" => "http://submissions.ask.com/ping?sitemap=%s",
       "Bing"    => "http://www.bing.com/webmaster/ping.aspx?siteMap=%s"
     }
