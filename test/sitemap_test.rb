@@ -61,14 +61,14 @@ class SitemapTest < Test::Unit::TestCase
   end
 
   def test_custom_resource_objects
-    activities = [Activity.first, Activity.last]
+    activities = proc { Activity.where(:published => true) }
     Sitemap::Generator.instance.load(:host => "someplace.com") do
-      resources :activities, :objects => proc { activities }, :skip_index => true
+      resources :activities, :objects => activities, :skip_index => true
     end
     doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
     elements = doc.xpath "//url/loc"
-    assert_equal elements.length, activities.length
-    activities.each_with_index do |activity, i|
+    assert_equal elements.length, activities.call.length
+    activities.call.each_with_index do |activity, i|
       assert_equal elements[i].text, "http://someplace.com/activities/%d" % activity.id
     end
   end

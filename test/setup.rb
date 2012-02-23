@@ -27,6 +27,7 @@ module SitemapTestSetup
         t.string :name
         t.text :contents
         t.string :location
+        t.boolean :published, :default => true
         t.timestamps
       end
     end
@@ -34,7 +35,8 @@ module SitemapTestSetup
       options = {
         :name => "Coding #{i}",
         :contents => "Lorem ipsum dolor sit",
-        :location => "someplace-#{i}"
+        :location => "someplace-#{i}",
+        :published => (i < 6)
       }
       Activity.create!(options)
     end

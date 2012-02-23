@@ -106,11 +106,12 @@ module Sitemap
     #
     def resources(type, options = {})
       path(type) unless options[:skip_index]
-      objects = options[:objects] ? options[:objects].call : type.to_s.classify.constantize.all
-      options.reject! { |k, v| k == :objects }
-
-      objects.each do |object|
-        path(object, options)
+      link_params = options.reject { |k, v| k == :objects }
+      get_objects = lambda {
+        options[:objects] ? options[:objects].call : type.to_s.classify.constantize
+      }
+      get_objects.call.find_each(:batch_size => 500) do |object|
+        path(object, link_params)
       end
     end
 
