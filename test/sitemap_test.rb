@@ -136,4 +136,16 @@ class SitemapTest < Test::Unit::TestCase
     assert_equal Sitemap::Generator.instance.file_url, "http://someplace.com/sitemap.xml"
   end
 
+  def test_save_creates_file
+    path = File.join(Dir.tmpdir, "sitemap.xml")
+    File.unlink(path) if File.exist?(path)
+    Sitemap::Generator.instance.load(:host => "someplace.com") do
+      resources :activities
+    end
+    doc = Nokogiri::XML(Sitemap::Generator.instance.build)
+    Sitemap::Generator.instance.save("/tmp/sitemap.xml")
+    assert File.exist?(path)
+    File.unlink(path)
+  end
+
 end
