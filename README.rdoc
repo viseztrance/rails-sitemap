@@ -43,10 +43,6 @@ You may change the defaults for either <tt>params</tt> or <tt>search</tt> option
 
   Sitemap.defaults[:params] = { :format => "html" }
 
-== Limitations
-
-Sitemaps can only have up to 50000 urls and an uncompressed size of 10MB. This issue will be resolved in a future release.
-
 == License
 
 This package is licensed under the MIT license and/or the Creative
