@@ -165,7 +165,7 @@ class SitemapTest < Test::Unit::TestCase
       path :root
     end
     path = File.join(Dir.tmpdir, "sitemap.xml")
-    root = File.join(Dir.tmpdir, "sitemap") # Directory is being removed at the end of the test.
+    root = File.join(Dir.tmpdir, "sitemaps") # Directory is being removed at the end of the test.
     assert !File.directory?(root)
     Sitemap::Generator.instance.build!
     Sitemap::Generator.instance.save(path)

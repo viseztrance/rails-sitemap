@@ -146,7 +146,7 @@ module Sitemap
         FileUtils.mv(fragments.first.path, location)
       else
         remove_saved_files(location)
-        root = File.join(Pathname.new(location).dirname, "sitemap")
+        root = File.join(Pathname.new(location).dirname, "sitemaps")
         Dir.mkdir(root) unless File.directory?(root)
         fragments.each_with_index do |fragment, i|
           file_pattern = File.join(root, "sitemap-fragment-#{i + 1}.xml")
@@ -166,7 +166,7 @@ module Sitemap
     end
 
     def remove_saved_files(location)
-      root = File.join(Pathname.new(location).dirname, "sitemap")
+      root = File.join(Pathname.new(location).dirname, "sitemaps")
       Dir[File.join(root, "sitemap-fragment-*.xml")].each { |file| File.unlink(file) }
       File.unlink(location) if File.exist?(location)
     end
