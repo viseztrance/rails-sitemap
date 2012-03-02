@@ -1,15 +1,11 @@
 xml.instruct!
-xml.urlset :xmlns => "http://www.sitemaps.org/schemas/sitemap/0.9" do
+xml.sitemapindex :xmlns => "http://www.sitemaps.org/schemas/sitemap/0.9" do
 
-  entries.each do |entry|
-    xml.url do
-      xml.loc polymorphic_url(entry[:object], entry[:params])
-      entry[:search].each do |type, value|
-        next if !value || value.blank?
-        xml.tag! SEARCH_ATTRIBUTES[type], value.to_s
-      end
+  fragments.each_with_index do |fragment, i|
+    xml.sitemap do
+      xml.loc file_url("sitemaps/sitemap-fragment-#{i + 1}.xml")
+      xml.lastmod Time.now.strftime("%Y-%m-%dT%H:%M:%S+00:00")
     end
   end
 
 end
-

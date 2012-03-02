@@ -10,13 +10,17 @@ module Sitemap
       :priority         => "priority"
     }
 
-    attr_accessor :entries, :host, :routes
+    attr_accessor :store, :host, :routes, :fragments
 
     # Instantiates a new object.
     # Should never be called directly.
     def initialize
       self.class.send(:include, Rails.application.routes.url_helpers)
-      self.entries = []
+      self.fragments = []
+      self.store = Store.new(:max_entries => Sitemap.defaults[:max_urls])
+      self.store.before_reset do |entries|
+        self.process_fragment!
+      end
     end
 
     # Sets the urls to be indexed.
@@ -75,7 +79,7 @@ module Sitemap
       search = Sitemap.defaults[:search].clone.merge!(options.select { |k, v| SEARCH_ATTRIBUTES.keys.include?(k) })
       search.merge!(search) { |type, value| get_data(object, value) }
 
-      self.entries << {
+      self.store << {
         :object => object,
         :search => search,
         :params => params
@@ -110,29 +114,61 @@ module Sitemap
       get_objects = lambda {
         options[:objects] ? options[:objects].call : type.to_s.classify.constantize
       }
-      get_objects.call.find_each(:batch_size => 500) do |object|
+      get_objects.call.find_each(:batch_size => Sitemap.defaults[:query_batch_size]) do |object|
         path(object, link_params)
       end
     end
 
     # Parses the loaded data and returns the xml entries.
-    def build
-      instance_exec(self, &routes)
+    def render(object = "fragment")
       xml = Builder::XmlMarkup.new(:indent => 2)
-      file = File.read(File.expand_path("../../views/index.xml.builder", __FILE__))
+      file = File.read(File.expand_path("../../views/#{object}.xml.builder", __FILE__))
       instance_eval file
     end
 
-    # Builds xml entries and saves the data to the specified location.
-    def save(location)
-      file = File.new(location, "w")
-      file.write(build)
+    # Creates a temporary file from the existing entries.
+    def process_fragment!
+      file = Tempfile.new("sitemap.xml")
+      file.write(render)
       file.close
+      self.fragments << file
     end
 
-    # URL to the <tt>sitemap.xml</tt> file.
-    def file_url
-      URI::HTTP.build(:host => host, :path => "/sitemap.xml").to_s
+    # Generates fragments.
+    def build!
+      instance_exec(self, &routes)
+      process_fragment! unless store.entries.empty?
+    end
+
+    # Creates the sitemap index file and saves any existing fragments.
+    def save(location)
+      if fragments.length == 1
+        FileUtils.mv(fragments.first.path, location)
+      else
+        remove_saved_files(location)
+        root = File.join(Pathname.new(location).dirname, "sitemap")
+        Dir.mkdir(root) unless File.directory?(root)
+        fragments.each_with_index do |fragment, i|
+          file_pattern = File.join(root, "sitemap-fragment-#{i + 1}.xml")
+          FileUtils.mv(fragment.path, file_pattern)
+        end
+        file = File.new(location, "w")
+        file.write(render "index")
+        file.close
+      end
+    end
+
+    # URL to the sitemap file.
+    #
+    # Defaults to <tt>sitemap.xml</tt>.
+    def file_url(path = "sitemap.xml")
+      URI::HTTP.build(:host => host, :path => File.join("/", path)).to_s
+    end
+
+    def remove_saved_files(location)
+      root = File.join(Pathname.new(location).dirname, "sitemap")
+      Dir[File.join(root, "sitemap-fragment-*.xml")].each { |file| File.unlink(file) }
+      File.unlink(location) if File.exist?(location)
     end
 
     private

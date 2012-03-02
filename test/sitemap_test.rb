@@ -19,6 +19,7 @@ class SitemapTest < Test::Unit::TestCase
 
   def setup
     create_db
+    Sitemap.defaults[:max_urls] = 10000
     Sitemap::Generator.reset_instance
   end
 
@@ -28,7 +29,7 @@ class SitemapTest < Test::Unit::TestCase
 
   def test_xml_response
     Sitemap::Generator.instance.load(:host => "someplace.com") {}
-    doc = Nokogiri::XML(Sitemap::Generator.instance.build)
+    doc = Nokogiri::XML(Sitemap::Generator.instance.render)
     assert doc.errors.empty?
     assert_equal doc.root.name, "urlset"
   end
@@ -39,7 +40,8 @@ class SitemapTest < Test::Unit::TestCase
       path :root
       path :faq
     end
-    doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
+    Sitemap::Generator.instance.build!
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.render)
     elements = doc.xpath "//url/loc"
     assert_equal elements.length, urls.length
     elements.each_with_index do |element, i|
@@ -51,7 +53,8 @@ class SitemapTest < Test::Unit::TestCase
     Sitemap::Generator.instance.load(:host => "someplace.com") do
       resources :activities
     end
-    doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
+    Sitemap::Generator.instance.build!
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.render)
     elements = doc.xpath "//url/loc"
     assert_equal elements.length, Activity.count + 1
     assert_equal elements.first.text, "http://someplace.com/activities"
@@ -65,7 +68,8 @@ class SitemapTest < Test::Unit::TestCase
     Sitemap::Generator.instance.load(:host => "someplace.com") do
       resources :activities, :objects => activities, :skip_index => true
     end
-    doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
+    Sitemap::Generator.instance.build!
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.render)
     elements = doc.xpath "//url/loc"
     assert_equal elements.length, activities.call.length
     activities.call.each_with_index do |activity, i|
@@ -77,7 +81,8 @@ class SitemapTest < Test::Unit::TestCase
     Sitemap::Generator.instance.load(:host => "someplace.com") do
       path :faq, :params => { :host => "anotherplace.com", :format => "html", :filter => "recent" }
     end
-    doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
+    Sitemap::Generator.instance.build!
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.render)
     elements = doc.xpath "//url/loc"
     assert_equal elements.first.text, "http://anotherplace.com/questions.html?filter=recent"
   end
@@ -87,7 +92,8 @@ class SitemapTest < Test::Unit::TestCase
       resources :activities, :skip_index => true, :params => { :host => proc { |obj| [obj.location, host].join(".") } }
     end
     activities = Activity.all
-    doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
+    Sitemap::Generator.instance.build!
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.render)
     elements = doc.xpath "//url/loc"
     elements.each_with_index do |element, i|
       assert_equal element.text, "http://%s.someplace.com/activities/%d" % [activities[i].location, activities[i].id]
@@ -99,7 +105,8 @@ class SitemapTest < Test::Unit::TestCase
       path :faq, :priority => 1, :change_frequency => "always"
       resources :activities, :change_frequency => "weekly"
     end
-    doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
+    Sitemap::Generator.instance.build!
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.render)
     assert_equal doc.xpath("//url/priority").first.text, "1"
     elements = doc.xpath "//url/changefreq"
     assert_equal elements[0].text, "always"
@@ -113,7 +120,7 @@ class SitemapTest < Test::Unit::TestCase
       resources :activities, :priority => proc { |obj| obj.id <= 2 ? 1 : 0.5 }, :skip_index => true
     end
     activities = Activity.all
-    doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.render)
     elements = doc.xpath "//url/priority"
     elements.each_with_index do |element, i|
       value = activities[i].id <= 2 ? "1" : "0.5"
@@ -125,7 +132,8 @@ class SitemapTest < Test::Unit::TestCase
     Sitemap::Generator.instance.load(:host => "someplace.com") do
       path :faq, :priority => "", :change_frequency => lambda { |e| return false}, :updated_at => Date.today
     end
-    doc = Nokogiri::HTML(Sitemap::Generator.instance.build)
+    Sitemap::Generator.instance.build!
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.render)
     assert_equal doc.xpath("//url/priority").count, 0
     assert_equal doc.xpath("//url/changefreq").count, 0
     assert_equal doc.xpath("//url/lastmod").text, Date.today.to_s
@@ -142,10 +150,44 @@ class SitemapTest < Test::Unit::TestCase
     Sitemap::Generator.instance.load(:host => "someplace.com") do
       resources :activities
     end
-    doc = Nokogiri::XML(Sitemap::Generator.instance.build)
-    Sitemap::Generator.instance.save("/tmp/sitemap.xml")
+    Sitemap::Generator.instance.build!
+    Sitemap::Generator.instance.save(path)
     assert File.exist?(path)
     File.unlink(path)
+  end
+
+  def test_saves_fragments
+    Sitemap.defaults[:max_urls] = 2
+    Sitemap::Generator.instance.load(:host => "someplace.com") do
+      path :root
+      path :root
+      path :root
+      path :root
+    end
+    path = File.join(Dir.tmpdir, "sitemap.xml")
+    root = File.join(Dir.tmpdir, "sitemap") # Directory is being removed at the end of the test.
+    assert !File.directory?(root)
+    Sitemap::Generator.instance.build!
+    Sitemap::Generator.instance.save(path)
+    1.upto(2) { |i|
+      assert File.exists?(File.join(root, "sitemap-fragment-#{i}.xml"))
+    }
+    FileUtils.rm_rf(root)
+  end
+
+  def test_fragments_index
+    Sitemap.defaults[:max_urls] = 2
+    Sitemap::Generator.instance.load(:host => "someplace.com") do
+      path :root
+      path :root
+      path :root
+      path :root
+      path :root
+    end
+    Sitemap::Generator.instance.build!
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.render("index"))
+    elements = doc.xpath "//sitemap"
+    assert_equal Sitemap::Generator.instance.fragments.length, 3
   end
 
 end
