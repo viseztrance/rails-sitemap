@@ -43,6 +43,13 @@ You may change the defaults for either <tt>params</tt> or <tt>search</tt> option
 
   Sitemap.defaults[:params] = { :format => "html" }
 
+== Large sites
+
+Google imposes a limit of 50000 entries per sitemap and maximum size of 10 MB. To comply with these rules,
+sitemaps having over 10.000 urls are being split into multiple files. You can change this value by overriding the max urls value:
+
+  Sitemap.defaults[:max_urls] = 50000
+
 == License
 
 This package is licensed under the MIT license and/or the Creative
