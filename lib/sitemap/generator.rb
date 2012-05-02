@@ -17,7 +17,7 @@ module Sitemap
     def initialize
       self.class.send(:include, Rails.application.routes.url_helpers)
       self.fragments = []
-      self.store = Store.new(:max_entries => Sitemap.defaults[:max_urls])
+      self.store = Store.new(:max_entries => Sitemap.configuration.max_urls)
       self.store.before_reset do |entries|
         self.process_fragment!
       end
@@ -72,11 +72,11 @@ module Sitemap
     # The resolved url would be <tt>http://mywebsite.com/frequent-questions?filter=recent</tt>.
     #
     def path(object, options = {})
-      params = Sitemap.defaults[:params].clone.merge!(options[:params] || {})
+      params = Sitemap.configuration.params.clone.merge!(options[:params] || {})
       params[:host] ||= host # Use global host if none was specified.
       params.merge!(params) { |type, value| get_data(object, value) }
 
-      search = Sitemap.defaults[:search].clone.merge!(options.select { |k, v| SEARCH_ATTRIBUTES.keys.include?(k) })
+      search = Sitemap.configuration.search.clone.merge!(options.select { |k, v| SEARCH_ATTRIBUTES.keys.include?(k) })
       search.merge!(search) { |type, value| get_data(object, value) }
 
       self.store << {
@@ -114,7 +114,7 @@ module Sitemap
       get_objects = lambda {
         options[:objects] ? options[:objects].call : type.to_s.classify.constantize
       }
-      get_objects.call.find_each(:batch_size => Sitemap.defaults[:query_batch_size]) do |object|
+      get_objects.call.find_each(:batch_size => Sitemap.configuration.query_batch_size) do |object|
         path(object, link_params)
       end
     end

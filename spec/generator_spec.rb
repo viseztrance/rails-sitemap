@@ -5,7 +5,7 @@ describe "Generator" do
 
   before do
     create_db
-    Sitemap.defaults[:max_urls] = 10000
+    Sitemap.configuration.reset
     Sitemap::Generator.reset_instance
   end
 
@@ -144,8 +144,13 @@ describe "Generator" do
 
   describe "fragments" do
 
+    before do
+      Sitemap.configure do |config|
+        config.max_urls = 2
+      end
+    end
+
     it "should save files" do
-      Sitemap.defaults[:max_urls] = 2
       Sitemap::Generator.instance.load(:host => "someplace.com") do
         path :root
         path :root
@@ -164,7 +169,6 @@ describe "Generator" do
     end
 
     it "should have an index page" do
-      Sitemap.defaults[:max_urls] = 2
       Sitemap::Generator.instance.load(:host => "someplace.com") do
         path :root
         path :root
