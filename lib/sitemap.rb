@@ -7,14 +7,13 @@
 
 require "singleton"
 require "builder"
+require "sitemap/version"
 require "sitemap/railtie"
 require "sitemap/ping"
 require "sitemap/store"
 require "sitemap/generator"
 
 module Sitemap
-
-  VERSION = Gem::Specification.load(File.expand_path("../sitemap.gemspec", File.dirname(__FILE__))).version.to_s
 
   mattr_accessor :defaults
 

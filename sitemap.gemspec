@@ -1,8 +1,8 @@
-$LOAD_PATH << File.join(File.dirname(__FILE__), "lib")
+require File.expand_path('../lib/sitemap/version', __FILE__)
 
 spec = Gem::Specification.new do |spec|
   spec.name = "sitemap"
-  spec.version = "0.2"
+  spec.version = Sitemap::VERSION
   spec.summary = "Sitemap"
   spec.description = "A simple ruby on rails sitemap generator"
 
