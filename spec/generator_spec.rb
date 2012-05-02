@@ -1,7 +1,7 @@
 require "minitest/autorun"
 require File.expand_path("../minitest_helper", __FILE__)
 
-describe "Sitemap" do
+describe "Generator" do
 
   before do
     create_db
