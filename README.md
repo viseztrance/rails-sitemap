@@ -54,7 +54,10 @@ rake sitemap:ping
 You may change the defaults for either *params* or *search* options as follows:
 
 ```ruby
-Sitemap.defaults[:params] = { :format => "html" }
+Sitemap.configure do |config|
+  config.params_format = "html"
+  config.search_change_frequency = "monthly"
+end
 ```
 
 ## Large sites
@@ -63,7 +66,9 @@ Google imposes a limit of 50000 entries per sitemap and maximum size of 10 MB. T
 sitemaps having over 10.000 urls are being split into multiple files. You can change this value by overriding the max urls value:
 
 ```ruby
-Sitemap.defaults[:max_urls] = 50000
+Sitemap.configure do |config|
+  config.max_urls = 50000
+end
 ```
 
 ## License

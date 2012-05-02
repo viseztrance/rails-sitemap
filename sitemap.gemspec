@@ -16,12 +16,8 @@ spec = Gem::Specification.new do |spec|
   spec.add_development_dependency "rails", ">= 3.0.0"
   spec.add_development_dependency "nokogiri"
 
-  spec.files = Dir["{lib,docs}/**/*"] + ["README.rdoc", "LICENSE", "Rakefile", "sitemap.gemspec"]
+  spec.files = Dir["{lib,docs}/**/*"] + ["README.md", "LICENSE", "Rakefile", "sitemap.gemspec"]
   spec.test_files = Dir["test/**/*"]
   spec.require_paths = ["lib"]
 
-  spec.has_rdoc = true
-  spec.rdoc_options << "--main" << "README.rdoc" << "--title" <<  "Sitemap" << "--line-numbers"
-                       "--webcvs" << "http://github.com/viseztrance/rails-sitemap"
-  spec.extra_rdoc_files = ["README.rdoc", "LICENSE"]
 end
