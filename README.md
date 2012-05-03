@@ -43,6 +43,14 @@ Building the sitemap:
 rake sitemap:generate
 ```
 
+By default the sitemap gets saved in the current application root path. You can change the save path by passing a LOCATION environment variable or using a configuration option:
+
+```ruby
+Sitemap.configure do |config|
+  config.save_path = "/home/user/apps/my-app/shared"
+end
+```
+
 Ping search engines:
 
 ```ruby
