@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Rails-sitemap by viseztrance</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>Rails-sitemap</h1>
+        <p>A simple ruby on rails sitemap generator</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/viseztrance/rails-sitemap" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/viseztrance/rails-sitemap/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/viseztrance/rails-sitemap/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h1>Sitemap</h1>
+
+<p>A simple ruby on rails sitemap generator.</p>
+
+<h2>Instalation</h2>
+
+<p>Install the gem:</p>
+
+<div class="highlight">
+<pre><span class="n">gem</span> <span class="n">install</span> <span class="n">sitemap</span>
+</pre>
+</div>
+
+
+<p>Or as a plugin:</p>
+
+<div class="highlight">
+<pre><span class="n">rails</span> <span class="n">plugin</span> <span class="n">install</span> <span class="n">git</span><span class="ss">:/</span><span class="o">/</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">viseztrance</span><span class="o">/</span><span class="n">rails</span><span class="o">-</span><span class="n">sitemap</span><span class="o">.</span><span class="n">git</span>
+</pre>
+</div>
+
+
+<p>Then create the initial config file:</p>
+
+<div class="highlight">
+<pre><span class="n">rails</span> <span class="n">g</span> <span class="n">sitemap</span><span class="ss">:install</span>
+</pre>
+</div>
+
+
+<h2>Usage</h2>
+
+<p>In your sitemap config file, paths can be indexed as follows:</p>
+
+<div class="highlight">
+<pre><span class="no">Sitemap</span><span class="o">::</span><span class="no">Generator</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">load</span> <span class="ss">:host</span> <span class="o">=&gt;</span> <span class="s2">"mywebsite.com"</span> <span class="k">do</span>
+  <span class="n">path</span> <span class="ss">:root</span><span class="p">,</span> <span class="ss">:priority</span> <span class="o">=&gt;</span> <span class="mi">1</span>
+  <span class="n">path</span> <span class="ss">:faq</span><span class="p">,</span> <span class="ss">:priority</span> <span class="o">=&gt;</span> <span class="mi">0</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="ss">:change_frequency</span> <span class="o">=&gt;</span> <span class="s2">"weekly"</span>
+  <span class="n">resources</span> <span class="ss">:activities</span><span class="p">,</span> <span class="ss">:params</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="ss">:format</span> <span class="o">=&gt;</span> <span class="s2">"html"</span> <span class="p">}</span>
+  <span class="n">resources</span> <span class="ss">:articles</span><span class="p">,</span> <span class="ss">:objects</span> <span class="o">=&gt;</span> <span class="nb">proc</span> <span class="p">{</span> <span class="no">Article</span><span class="o">.</span><span class="n">published</span> <span class="p">}</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<p>Please read the docs for a more comprehensive list of options.</p>
+
+<p>Building the sitemap:</p>
+
+<div class="highlight">
+<pre><span class="n">rake</span> <span class="n">sitemap</span><span class="ss">:generate</span>
+</pre>
+</div>
+
+
+<p>By default the sitemap gets saved in the current application root path. You can change the save path by passing a LOCATION environment variable or using a configuration option:</p>
+
+<div class="highlight">
+<pre><span class="no">Sitemap</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">save_path</span> <span class="o">=</span> <span class="s2">"/home/user/apps/my-app/shared"</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<p>Ping search engines:</p>
+
+<div class="highlight">
+<pre><span class="n">rake</span> <span class="n">sitemap</span><span class="ss">:ping</span>
+</pre>
+</div>
+
+
+<h2>Setting defaults</h2>
+
+<p>You may change the defaults for either <em>params</em> or <em>search</em> options as follows:</p>
+
+<div class="highlight">
+<pre><span class="no">Sitemap</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">params_format</span> <span class="o">=</span> <span class="s2">"html"</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">search_change_frequency</span> <span class="o">=</span> <span class="s2">"monthly"</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<h2>Large sites</h2>
+
+<p>Google imposes a limit of 50000 entries per sitemap and maximum size of 10 MB. To comply with these rules,
+sitemaps having over 10.000 urls are being split into multiple files. You can change this value by overriding the max urls value:</p>
+
+<div class="highlight">
+<pre><span class="no">Sitemap</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">max_urls</span> <span class="o">=</span> <span class="mi">50000</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<h2>License</h2>
+
+<p>This package is licensed under the MIT license and/or the Creative
+Commons Attribution-ShareAlike.</p>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/viseztrance">viseztrance</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+    
+  </body>
+</html>
