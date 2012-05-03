@@ -11,7 +11,6 @@ namespace :sitemap do
     path = File.join(root, "sitemap.xml")
     Sitemap::Generator.instance.build!
     Sitemap::Generator.instance.save path
-    File.chmod(0755,path)
   end
 
   desc "Ping engines."

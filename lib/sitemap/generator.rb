@@ -151,11 +151,13 @@ module Sitemap
         fragments.each_with_index do |fragment, i|
           file_pattern = File.join(root, "sitemap-fragment-#{i + 1}.xml")
           FileUtils.mv(fragment.path, file_pattern)
+          File.chmod(0755, file_pattern)
         end
         file = File.new(location, "w")
         file.write(render "index")
         file.close
       end
+      File.chmod(0755, location)
     end
 
     # URL to the sitemap file.
