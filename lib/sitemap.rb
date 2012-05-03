@@ -24,17 +24,4 @@ module Sitemap
     yield configuration
   end
 
-  # mattr_accessor :defaults
-
-  # self.defaults = {
-  #   :params => {},
-  #   :search => {
-  #     :updated_at => proc { |obj|
-  #       obj.updated_at.strftime("%Y-%m-%d") if obj.respond_to?(:updated_at)
-  #     }
-  #   },
-  #   :query_batch_size => 500,
-  #   :max_urls => 10000
-  # }
-
 end
