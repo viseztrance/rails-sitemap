@@ -8,7 +8,8 @@ module Sitemap
     SEARCH_ENGINES = {
       "Google"  => "http://www.google.com/webmasters/tools/ping?sitemap=%s",
       "Ask.com" => "http://submissions.ask.com/ping?sitemap=%s",
-      "Bing"    => "http://www.bing.com/webmaster/ping.aspx?siteMap=%s"
+      "Bing"    => "http://www.bing.com/webmaster/ping.aspx?siteMap=%s",
+      "Yandex"    => "http://webmaster.yandex.ru/wmconsole/sitemap_list.xml?host=%s"
     }
 
     def self.send_request(file_path = false)
