@@ -1,5 +1,4 @@
 require "net/http"
-require "cgi"
 
 module Sitemap
 
@@ -13,7 +12,7 @@ module Sitemap
 
     def self.send_request(file_path = false)
       SEARCH_ENGINES.each do |name, url|
-        request = url % CGI.escape(file_path || Sitemap::Generator.instance.file_url).gsub("%2F","/").to_s
+        request = url % (file_path || Sitemap::Generator.instance.file_url)
         Net::HTTP.get(URI.parse(request))
       end
     end
