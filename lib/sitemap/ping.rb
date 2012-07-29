@@ -13,7 +13,7 @@ module Sitemap
 
     def self.send_request(file_path = false)
       SEARCH_ENGINES.each do |name, url|
-        request = url % CGI.escape(file_path || Sitemap::Generator.instance.file_url).gsub("%2F","/")
+        request = url % CGI.escape(file_path || Sitemap::Generator.instance.file_url).gsub("%2F","/").to_s
         Net::HTTP.get(URI.parse(request))
       end
     end
