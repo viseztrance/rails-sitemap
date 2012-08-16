@@ -31,6 +31,12 @@ module Sitemap
     #     ...
     #   end
     #
+    # Literal paths can be added as follows:
+    #
+    #   Sitemap::Generator.instance.load :host => "mywebsite.com" do
+    #     literal "/some_fancy_url"
+    #   end    
+    #
     # Simple paths can be added as follows:
     #
     #   Sitemap::Generator.instance.load :host => "mywebsite.com" do
@@ -56,6 +62,17 @@ module Sitemap
         self.send("#{k}=", v)
       end
       self.routes = block
+    end
+    
+    # Adds the literal url (for consistency, starting with a "/"  as in "/my_url")
+    # accepts similar options to path and resources
+    def literal(target_url, options = {})
+      search = Sitemap.configuration.search.clone.merge!(options.select { |k, v| SEARCH_ATTRIBUTES.keys.include?(k) })
+      output_host =  options[:host] || host
+      self.store << {
+        :url =>"http://#{output_host}#{target_url}",
+        :search => search
+      }
     end
 
     # Adds the specified url or object (such as an ActiveRecord model instance).

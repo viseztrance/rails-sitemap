@@ -19,6 +19,21 @@ describe "Generator" do
     doc.errors.length.must_equal 0
     doc.root.name.must_equal "urlset"
   end
+  
+  it "should create entries based on literals" do
+    urls = ["http://someplace.com/target_url", "http://someplace.com/another_url"]
+    Sitemap::Generator.instance.load(:host => "someplace.com") do
+      literal "/target_url"
+      literal "/another_url"
+    end
+    Sitemap::Generator.instance.build!
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.render)
+    elements = doc.xpath "//url/loc"
+    elements.length.must_equal urls.length
+    elements.each_with_index do |element, i|
+      element.text.must_equal urls[i]
+    end
+  end
 
   it "should create entries based on the route paths" do
     urls = ["http://someplace.com/", "http://someplace.com/questions"]
