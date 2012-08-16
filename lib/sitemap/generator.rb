@@ -68,6 +68,8 @@ module Sitemap
     # accepts similar options to path and resources
     def literal(target_url, options = {})
       search = Sitemap.configuration.search.clone.merge!(options.select { |k, v| SEARCH_ATTRIBUTES.keys.include?(k) })
+      search.merge!(search) { |type, value| get_data(nil, value) }
+            
       output_host =  options[:host] || host
       self.store << {
         :url =>"http://#{output_host}#{target_url}",
