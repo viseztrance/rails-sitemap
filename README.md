@@ -30,6 +30,7 @@ In your sitemap config file, paths can be indexed as follows:
 Sitemap::Generator.instance.load :host => "mywebsite.com" do
   path :root, :priority => 1
   path :faq, :priority => 0.5, :change_frequency => "weekly"
+  literal "/my_blog" #helpful for vanity urls layering search results
   resources :activities, :params => { :format => "html" }
   resources :articles, :objects => proc { Article.published }
 end
