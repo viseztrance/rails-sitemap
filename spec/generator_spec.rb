@@ -19,10 +19,25 @@ describe "Generator" do
     doc.errors.length.must_equal 0
     doc.root.name.must_equal "urlset"
   end
-  
+
   it "should create entries based on literals" do
     urls = ["http://someplace.com/target_url", "http://someplace.com/another_url"]
     Sitemap::Generator.instance.load(:host => "someplace.com") do
+      literal "/target_url"
+      literal "/another_url"
+    end
+    Sitemap::Generator.instance.build!
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.render)
+    elements = doc.xpath "//url/loc"
+    elements.length.must_equal urls.length
+    elements.each_with_index do |element, i|
+      element.text.must_equal urls[i]
+    end
+  end
+
+  it "should create entries based on literals with https" do
+    urls = ["https://someplace.com/target_url", "https://someplace.com/another_url"]
+    Sitemap::Generator.instance.load(:host => "someplace.com", :protocol => "https") do
       literal "/target_url"
       literal "/another_url"
     end
@@ -50,6 +65,21 @@ describe "Generator" do
     end
   end
 
+  it "should create entries based on the route paths with https" do
+    urls = ["https://someplace.com/", "https://someplace.com/questions"]
+    Sitemap::Generator.instance.load(:host => "someplace.com", :protocol => "https") do
+      path :root
+      path :faq
+    end
+    Sitemap::Generator.instance.build!
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.render)
+    elements = doc.xpath "//url/loc"
+    elements.length.must_equal urls.length
+    elements.each_with_index do |element, i|
+      element.text.must_equal urls[i]
+    end
+  end
+
   it "should create entries based on the route resources" do
     Sitemap::Generator.instance.load(:host => "someplace.com") do
       resources :activities
@@ -61,6 +91,20 @@ describe "Generator" do
     elements.first.text.must_equal "http://someplace.com/activities"
     elements[1..-1].each_with_index do |element, i|
       element.text.must_equal "http://someplace.com/activities/#{i + 1}"
+    end
+  end
+
+  it "should create entries based on the route resources with https" do
+    Sitemap::Generator.instance.load(:host => "someplace.com", :protocol => "https") do
+      resources :activities
+    end
+    Sitemap::Generator.instance.build!
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.render)
+    elements = doc.xpath "//url/loc"
+    elements.length.must_equal (Activity.count + 1)
+    elements.first.text.must_equal "https://someplace.com/activities"
+    elements[1..-1].each_with_index do |element, i|
+      element.text.must_equal "https://someplace.com/activities/#{i + 1}"
     end
   end
 
