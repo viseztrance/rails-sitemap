@@ -10,12 +10,13 @@ module Sitemap
       :priority         => "priority"
     }
 
-    attr_accessor :store, :host, :routes, :fragments
+    attr_accessor :store, :protocol, :host, :routes, :fragments
 
     # Instantiates a new object.
     # Should never be called directly.
     def initialize
       self.class.send(:include, Rails.application.routes.url_helpers)
+      self.protocol = "http"
       self.fragments = []
       self.store = Store.new(:max_entries => Sitemap.configuration.max_urls)
       self.store.before_reset do |entries|
@@ -35,7 +36,7 @@ module Sitemap
     #
     #   Sitemap::Generator.instance.load :host => "mywebsite.com" do
     #     literal "/some_fancy_url"
-    #   end    
+    #   end
     #
     # Simple paths can be added as follows:
     #
@@ -63,16 +64,17 @@ module Sitemap
       end
       self.routes = block
     end
-    
+
     # Adds the literal url (for consistency, starting with a "/"  as in "/my_url")
     # accepts similar options to path and resources
     def literal(target_url, options = {})
       search = Sitemap.configuration.search.clone.merge!(options.select { |k, v| SEARCH_ATTRIBUTES.keys.include?(k) })
       search.merge!(search) { |type, value| get_data(nil, value) }
-            
+
       output_host =  options[:host] || host
+      output_protocol = options[:protocol] || protocol
       self.store << {
-        :url =>"http://#{output_host}#{target_url}",
+        :url =>"#{output_protocol}://#{output_host}#{target_url}",
         :search => search
       }
     end
@@ -92,6 +94,7 @@ module Sitemap
     #
     def path(object, options = {})
       params = Sitemap.configuration.params.clone.merge!(options[:params] || {})
+      params[:protocol] ||= protocol # Use global protocol if none was specified.
       params[:host] ||= host # Use global host if none was specified.
       params.merge!(params) { |type, value| get_data(object, value) }
 
