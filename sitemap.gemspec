@@ -14,7 +14,6 @@ spec = Gem::Specification.new do |spec|
   spec.add_development_dependency "nokogiri"
   spec.add_development_dependency "minitest"
   spec.add_development_dependency "rails", ">= 3.0.0"
-  spec.add_development_dependency "nokogiri"
 
   spec.files = Dir["{lib,docs}/**/*"] + ["README.md", "LICENSE", "Rakefile", "sitemap.gemspec"]
   spec.test_files = Dir["test/**/*"]
