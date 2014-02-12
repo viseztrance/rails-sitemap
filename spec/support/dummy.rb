@@ -12,7 +12,7 @@ TestApp::Application.routes.draw do
 
   root :to => "main#index"
 
-  match "/questions" => "static#faq", :as => "faq"
+  get "/questions" => "static#faq", :as => "faq"
 
   resources :activities
 

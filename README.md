@@ -80,6 +80,11 @@ Sitemap.configure do |config|
 end
 ```
 
+## Tests
+
+This project is using minitest. To run the test simply run rake
+
+
 ## License
 
 This package is licensed under the MIT license and/or the Creative
