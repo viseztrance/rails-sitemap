@@ -10,7 +10,7 @@ module Sitemap
       :priority         => "priority"
     }
 
-    attr_accessor :store, :protocol, :host, :routes, :fragments
+    attr_accessor :store, :protocol, :host, :routes, :fragments, :context
 
     # Instantiates a new object.
     # Should never be called directly.
@@ -186,7 +186,13 @@ module Sitemap
     #
     # Defaults to <tt>sitemap.xml</tt>.
     def file_url(path = "sitemap.xml")
-      URI::HTTP.build(:host => host, :path => File.join("/", path)).to_s
+      if context
+        file_path = File.join("/", context, path)
+      else
+        file_path = File.join("/", path)
+      end
+
+      URI::HTTP.build(:host => host, :path => file_path).to_s
     end
 
     def remove_saved_files(location)

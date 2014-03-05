@@ -189,6 +189,11 @@ describe "Generator" do
     Sitemap::Generator.instance.file_url.must_equal "http://someplace.com/sitemap.xml"
   end
 
+  it "should set the sitemap url based on the current host and context" do
+    Sitemap::Generator.instance.load(:host => "someplace.com", :context => "foo/bar") {}
+    Sitemap::Generator.instance.file_url.must_equal "http://someplace.com/foo/bar/sitemap.xml"
+  end
+
   it "should create a file when saving" do
     path = File.join(Dir.tmpdir, "sitemap.xml")
     File.unlink(path) if File.exist?(path)
