@@ -50,6 +50,21 @@ describe "Generator" do
     end
   end
 
+  it "should create entries based on literals with link" do
+    link = { href: "/content_url", rel: "contents" }
+    Sitemap::Generator.instance.load(:host => "someplace.com") do
+      literal "/target_url", link: { href: "/content_url", rel: "contents" }
+    end
+    Sitemap::Generator.instance.build!
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.render)
+    element = doc.at_xpath "//url/ln"
+    element.keys.length.must_equal link.length
+    element.keys.each_with_index do |attribute, i|
+      element[attribute].must_equal link[attribute.to_sym]
+    end
+
+  end
+
   it "should create entries based on literals with https" do
     urls = ["https://someplace.com/target_url", "https://someplace.com/another_url"]
     Sitemap::Generator.instance.load(:host => "someplace.com", :protocol => "https") do

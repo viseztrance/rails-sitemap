@@ -12,6 +12,9 @@ xml.urlset :xmlns => "http://www.sitemaps.org/schemas/sitemap/0.9", 'xmlns:rs' =
       unless entry[:metadata].nil?
         xml.tag!('rs:md', entry[:metadata])
       end
+      unless entry[:link].nil?
+        xml.tag!('rs:ln', entry[:link])
+      end
     end
   end
 
