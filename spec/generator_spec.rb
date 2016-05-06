@@ -1,4 +1,5 @@
 require "minitest/autorun"
+require 'byebug'
 require File.expand_path("../minitest_helper", __FILE__)
 
 describe "Generator" do
@@ -32,6 +33,20 @@ describe "Generator" do
     elements.length.must_equal urls.length
     elements.each_with_index do |element, i|
       element.text.must_equal urls[i]
+    end
+  end
+
+  it "should create entries based on literals with hash" do
+    metadata = { hash: "md5:1584abdf8ebdc9802ac0c6a7402c03b6", length: "8876", type: "text/html" } 
+    Sitemap::Generator.instance.load(:host => "someplace.com") do
+      literal "/target_url", metadata: { hash: "md5:1584abdf8ebdc9802ac0c6a7402c03b6", length: "8876", type: "text/html" } 
+    end
+    Sitemap::Generator.instance.build!
+    doc = Nokogiri::HTML(Sitemap::Generator.instance.render)
+    element = doc.at_xpath "//url/md"
+    element.keys.length.must_equal metadata.length
+    element.keys.each_with_index do |attribute, i|
+      element[attribute].must_equal metadata[attribute.to_sym]
     end
   end
 
@@ -197,7 +212,7 @@ describe "Generator" do
   it "should create a file when saving" do
     path = File.join(Dir.tmpdir, "sitemap.xml")
     File.unlink(path) if File.exist?(path)
-    Sitemap::Generator.instance.load(:host => "someplace.com") do
+    Sitemap::Generator.instance.load(host: "someplace.com") do
       resources :activities
     end
     Sitemap::Generator.instance.build!
@@ -215,7 +230,7 @@ describe "Generator" do
     end
 
     it "should save files" do
-      Sitemap::Generator.instance.load(:host => "someplace.com") do
+      Sitemap::Generator.instance.load(host: "someplace.com") do
         path :root
         path :root
         path :root
@@ -233,7 +248,7 @@ describe "Generator" do
     end
 
     it "should have an index page" do
-      Sitemap::Generator.instance.load(:host => "someplace.com") do
+      Sitemap::Generator.instance.load(host: "someplace.com") do
         path :root
         path :root
         path :root
@@ -241,8 +256,8 @@ describe "Generator" do
         path :root
       end
       Sitemap::Generator.instance.build!
-      doc = Nokogiri::HTML(Sitemap::Generator.instance.render("index"))
-      elements = doc.xpath "//sitemap"
+      doc = Nokogiri::HTML(Sitemap::Generator.instance.render('index'))
+      elements = doc.xpath '//sitemap'
       Sitemap::Generator.instance.fragments.length.must_equal 3
     end
 
