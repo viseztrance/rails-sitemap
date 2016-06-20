@@ -6,6 +6,8 @@ module Sitemap
 
       PARAMS = {}.freeze
 
+      METADATA = {}.freeze
+
       SEARCH = {
         :updated_at => proc { |obj|
           obj.updated_at.strftime("%Y-%m-%d") if obj.respond_to?(:updated_at)
@@ -27,6 +29,7 @@ module Sitemap
     def reset
       self.data = {
         :params           => Defaults::PARAMS.dup,
+        :metadata         => Defaults::METADATA.dup,
         :search           => Defaults::SEARCH.dup,
         :query_batch_size => Defaults::QUERY_BATCH_SIZE,
         :max_urls         => Defaults::MAX_URLS
@@ -37,12 +40,16 @@ module Sitemap
       data[:params]
     end
 
+    def metadata
+      data[:metadata]
+    end
+
     def search
       data[:search]
     end
 
     def method_missing(method, *args, &block)
-      if /^(?<prefix>search|params)?_?(?<name>[a-z\_]+)(?<setter>=)?/ =~ method
+      if /^(?<prefix>search|params|metadata)?_?(?<name>[a-z\_]+)(?<setter>=)?/ =~ method
         if prefix
           if setter
             self.data[prefix.to_sym][name.to_sym] = args.first

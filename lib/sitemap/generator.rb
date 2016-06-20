@@ -68,6 +68,8 @@ module Sitemap
     # Adds the literal url (for consistency, starting with a "/"  as in "/my_url")
     # accepts similar options to path and resources
     def literal(target_url, options = {})
+      metadata = Sitemap.configuration.params.clone.merge!(options[:metadata] || {})
+      link = Sitemap.configuration.params.clone.merge!(options[:link] || {})
       search = Sitemap.configuration.search.clone.merge!(options.select { |k, v| SEARCH_ATTRIBUTES.keys.include?(k) })
       search.merge!(search) { |type, value| get_data(nil, value) }
 
@@ -75,7 +77,9 @@ module Sitemap
       output_protocol = options[:protocol] || protocol
       self.store << {
         :url =>"#{output_protocol}://#{output_host}#{target_url}",
-        :search => search
+        :search => search,
+        :metadata => metadata,
+        :link => link
       }
     end
 

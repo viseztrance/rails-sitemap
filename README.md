@@ -33,6 +33,8 @@ Sitemap::Generator.instance.load :host => "mywebsite.com" do
   literal "/my_blog" #helpful for vanity urls layering search results
   resources :activities, :params => { :format => "html" }
   resources :articles, :objects => proc { Article.published }
+  # example of added ResourceSync metadata elements
+  literal "/files/6t053f96k" metadata: { hash: "md5:1584abdf8ebdc9802ac0c6a7402c03b6", length: "8876", type: "text/html" }
 end
 ```
 
